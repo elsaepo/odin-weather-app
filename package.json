@@ -1,0 +1,27 @@
+{
+  "name": "odin-weather-app",
+  "version": "1.0.0",
+  "description": "A simple weather app as part of The Odin Project curriculum",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elsaepo/odin-weather-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elsaepo/odin-weather-app/issues"
+  },
+  "homepage": "https://github.com/elsaepo/odin-weather-app#readme",
+  "devDependencies": {
+    "css-loader": "^6.7.2",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0"
+  }
+}
