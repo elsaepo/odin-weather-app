@@ -25,27 +25,43 @@ async function getGeocodeData(city) {
     }
 }
 
-async function getWeatherData(location, units) {
+async function getcurrentWeather(location, units) {
     let lon = location.lon;
     let lat = location.lat;
     let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}`,
         { mode: "cors" });
         checkResponse(response);
-    let weatherData = await response.json();
-    return weatherData;
+    let currentWeather = await response.json();
+    return currentWeather;
 }
+
+async function getForecast(location, units) {
+    let lon = location.lon;
+    let lat = location.lat;
+    let response = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}`,
+      { mode: "cors" }
+    );
+    let forecastWeather = await response.json();
+    return forecastWeather;
+  }
 
 async function getWeather(location, units) {
     let geoData = getGeocodeData(location);
-    let weatherData = geoData.then(loc => {
-        return getWeatherData(loc, units);
+    let currentWeather = geoData.then(loc => {
+        return getcurrentWeather(loc, units);
     })
-    Promise.all([geoData, weatherData])
-        .then(([geoData, weatherData]) => {
+    let forecastWeather = geoData.then(loc => {
+        return getForecast(loc, units);
+    })
+    Promise.all([geoData, currentWeather, forecastWeather])
+        .then(([geoData, currentWeather, forecastWeather]) => {
             console.log(`got geo data:`)
             console.log(geoData)
             console.log(`got weather data:`)
-            console.log(weatherData)
+            console.log(currentWeather)
+            console.log(`got forecast data:`)
+            console.log(forecastWeather);
         })
         .catch(err => {
             console.error(err);
