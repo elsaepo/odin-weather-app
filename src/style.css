@@ -8,13 +8,16 @@ body {
     margin: 0;
     padding: 0;
     background-color: rgb(50, 50, 50);
+    font-family: Poppins;
+    color: white;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
 }
 
 h2 {
-    font-family: Poppins;
-    font-size: 4rem;
-    color: white;
-    margin: 0;
+    font-size: 6rem;
 }
 
 #app {
@@ -25,12 +28,67 @@ h2 {
 }
 
 section {
-    padding: 10%;
+    padding: 8%;
 }
 
 .day-container {
     display: flex;
     align-items: center;
+}
+
+.main-block {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 25% auto 10% 1fr;
+    grid-template-rows: 40px 20px 40px 30px 30px 30px;
+}
+
+.main-block > * {
+    width: 100%;
+    height: 100%;
+}
+
+.main-status, .main-location, .main-date {
+    grid-column: 1 / 6;
+}
+
+.main-status {
+    font-size: 2rem;
+}
+
+.main-icon {
+    grid-column: 1 / 2;
+    grid-row: 4 / 7;
+    height: 100%;
+    width: 100%;
+    transform: scale(1.6)
+}
+
+.main-temp {
+    grid-column: 2 / 3;
+    grid-row: 4 / 7;
+    display: flex;
+    align-items: center;
+}
+
+.main-feels-like, .main-humidity, .main-wind {
+    grid-column: 4 / 5;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+.main-feels-like {
+    grid-row: 4 / 5;
+}
+
+.main-humidity {
+    grid-row: 5 / 6;
+}
+
+.main-wind {
+    grid-row: 6 / 7;
 }
 
 .forecast-container {

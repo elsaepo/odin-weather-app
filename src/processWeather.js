@@ -46,6 +46,11 @@ function convertForecast(data) {
     // Parse the data of each day at approximately midday to get normalised values
     // For the max temp data, take the maximum out of all the time blocks of that day
     let avForecast = forecast.map((day) => {
+        //
+        //
+        //may be some bug going on here around 10-11pm with currentDayRemaing
+        //
+        //
         let chunkToCalc = day.length < 5 ? 0 : 4;
         let parsedData = parseData(day[chunkToCalc]);
         parsedData.maxTemp = Math.round(Math.max(...day.map((time) => time.main.temp)));

@@ -67,12 +67,6 @@ async function getWeather(location, units) {
     })
     return Promise.all([geoData, currentWeather, forecastWeather])
         .then(([geoData, currentWeather, forecastWeather]) => {
-            console.log(`got geo data:`)
-            // console.log(geoData)
-            console.log(`got weather data:`)
-            // console.log(currentWeather)
-            console.log(`got forecast data:`)
-            console.log(forecastWeather);
             return { geoData, currentWeather, forecastWeather }
         })
         .catch(err => {
