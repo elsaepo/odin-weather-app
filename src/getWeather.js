@@ -14,7 +14,7 @@ function checkResponse(response) {
 // If there are no valid cities, throws an error
 async function getGeocodeData(city) {
     try {
-        let response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`,
+        let response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`,
             { mode: "cors" })
         checkResponse(response);
         let geoData = await response.json();
