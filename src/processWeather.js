@@ -2,11 +2,12 @@
 // and converts it to a much more readable and reduced format
 function parseData(data) {
     return {
-        currentTemp: Math.round(data.main.temp),
-        feelsLike: Math.round(data.main.feels_like),
+        date: data.dt_txt,
+        currentTemp: data.main.temp,
+        feelsLike: data.main.feels_like,
         humidity: data.main.humidity,
         wind: {
-            speed: Math.round(data.wind.speed),
+            speed: data.wind.speed,
             deg: data.wind.deg
         },
         weather: {
@@ -35,6 +36,7 @@ function convertForecast(data) {
             currentDayRemaining++;
         } else break;
     }
+    // Divide the current day out of the forecast data
     forecast.push(data.splice(0, currentDayRemaining))
     // Once the current day's weather objects have been divided, divide the rest into 24hr chunks
     // Maximum of 5 day objects
@@ -42,7 +44,6 @@ function convertForecast(data) {
         forecast.push(data.splice(0, 8));
     }
     forecast = forecast.splice(0, 5)
-    console.log(forecast)
     // Parse the data of each day at approximately midday to get normalised values
     // For the max temp data, take the maximum out of all the time blocks of that day
     let avForecast = forecast.map((day) => {
@@ -52,11 +53,15 @@ function convertForecast(data) {
         //
         //
         let chunkToCalc = day.length < 5 ? 0 : 4;
-        let parsedData = parseData(day[chunkToCalc]);
-        parsedData.maxTemp = Math.round(Math.max(...day.map((time) => time.main.temp)));
-        delete parsedData.currentTemp;
-        delete parsedData.feelsLike;
-        return parsedData;
+        // If the current day has no weather objects left, ignore its mapping
+        if (day.length > 0){
+            let parsedData = parseData(day[chunkToCalc]);
+            parsedData.maxTemp = Math.max(...day.map((time) => time.main.temp));
+            parsedData.minTemp = Math.min(...day.map((time) => time.main.temp));
+            delete parsedData.currentTemp;
+            delete parsedData.feelsLike;
+            return parsedData;
+        }
     });
     return avForecast;
 }
@@ -68,8 +73,14 @@ function processWeather(weatherObject) {
         currentWeather: parseData(weatherObject.currentWeather),
         forecastWeather: convertForecast(weatherObject.forecastWeather.list)
     }
-    // Add maxTemp data to the currentWeather object
-    weather.currentWeather.maxTemp = weather.forecastWeather[0].maxTemp;
+    // Add maxTemp data to the currentWeather object (if the first day has a forecast object remaining)
+    if (weather.forecastWeather[0].length > 0){
+        weather.currentWeather.maxTemp = weather.forecastWeather[0].maxTemp;
+    } else {
+        weather.currentWeather.maxTemp = weather.currentWeather.currentTemp;
+    }
+    // Then chop out the first day so it doesn't appear in the forecast
+    weather.forecastWeather.splice(0, 1);
     return weather;
 }
 
