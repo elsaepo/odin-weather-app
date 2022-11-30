@@ -35,7 +35,41 @@ function createMainWeather(weather) {
     return mainBlock;
 }
 
+function createForecastScroller(){
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    const slider = document.createElement("div");
+    slider.classList.add("forecast-scroller");
+    const end = () => {
+        isDown = false;
+        slider.classList.remove("forecast-scroller-active");
+    }
+    const start = (event) => {
+        isDown = true;
+        slider.classList.add("forecast-scroller-active");
+        startX = event.pageX || event.touches[0].pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    }
+    const move = (event) => {
+        if(!isDown) return;
+        event.preventDefault();
+        const x = event.pageX || event.touches[0].pageX - slider.offsetLeft;
+        const dist = (x - startX);
+        slider.scrollLeft = scrollLeft - dist;
+    }
+    slider.addEventListener("mousedown", start);
+    slider.addEventListener("touchstart", start);
+    slider.addEventListener("mousemove", move);
+    slider.addEventListener("touchmove", move);
+    slider.addEventListener("mouseleave", end);
+    slider.addEventListener("mouseup", end);
+    slider.addEventListener("touchend", end);
+    return slider;
+}
+
 function createForecastWeather(forecast) {
+    const forecastScroller = createForecastScroller();
     const forecastContainer = document.createElement("div");
     forecastContainer.classList.add("forecast-container");
     for (let day of forecast) {
@@ -54,7 +88,8 @@ function createForecastWeather(forecast) {
         }
         forecastContainer.appendChild(forecastBlock);
     }
-    return forecastContainer;
+    forecastScroller.appendChild(forecastContainer);
+    return forecastScroller;
 }
 
 // Creates a weather element based on where it is used (main or forecast), it's type and content
