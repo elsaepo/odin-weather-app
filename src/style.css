@@ -60,7 +60,14 @@ header {
 .main-icon {
     grid-column: 1 / 2;
     grid-row: 4 / 7;
-    transform: scale(1.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-icon > img {
+    width: 150%;
+    height: 150%;
 }
 
 .main-temp {
@@ -140,9 +147,14 @@ header {
     align-items: center;
     justify-content: center;
     /* transform: scale(1.2); */
-    text-align: center;
+    /* text-align: center; */
+    /* width: 100%; */
+    /* margin-top: -16px; */
+}
+
+.forecast-icon > img {
     width: 100%;
-    margin-top: -16px;
+    height: 180%;
 }
 
 .forecast-max-temp {

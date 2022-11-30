@@ -12,12 +12,10 @@ let units = "metric";
 let weather = getWeather("Melbourne,Australia", "metric");
 weather
 .then(data => {
-    // console.log(data.weatherData)
     data.weatherData = processWeather(data.weatherData);
     return data;
 })
 .then((weather) => {
-    console.log(weather)
     domController.createWeather(weather)
 })
 .catch(err => {

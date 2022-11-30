@@ -20,7 +20,7 @@ function createMainWeather(weather) {
     const mainElements = {
         status: createWeatherElement("main", "description", `${current.weather.description}.`),
         location: createWeatherElement("main", "location", `${weather.geoData.name}, ${weather.geoData.country}`),
-        date: createWeatherElement("main", "date", new Date().toLocaleDateString("en-us", { weekday: 'long', month: 'short', day: 'numeric' })),
+        date: createWeatherElement("main", "date", `${new Date().toLocaleDateString("en-us", { weekday: 'long', month: 'short', day: 'numeric' })} / ${new Date().toLocaleTimeString("en-us", { timeStyle: "short" })}`),
         icon: createWeatherElement("main", "icon", `http://openweathermap.org/img/wn/${current.weather.icon}@4x.png`),
         temp: createWeatherElement("main", "temp", Math.round(current.currentTemp)),
         units: createWeatherElement("main", "units", `${current.units === "CHANGE THIS HERE" ? "C" : "C"}`),
@@ -61,9 +61,11 @@ function createForecastWeather(forecast) {
 // Sets class to be a standadised format for easier CSSing of the grid
 function createWeatherElement(use, type, content) {
     if (type === "icon") {
-        const block = document.createElement("img");
+        const block = document.createElement("div");
         block.classList.add(`${use}-${type}`);
-        block.src = content;
+        const image = document.createElement("img");
+        image.src = content;
+        block.appendChild(image);
         return block;
     }
     const block = document.createElement("p")
@@ -74,6 +76,7 @@ function createWeatherElement(use, type, content) {
 
 function createWeather(weather) {
     dayContainer.appendChild(createMainWeather(weather))
+    console.log(weather.weatherData.daily)
     forecastContainer.appendChild(createForecastWeather(weather.weatherData.daily))
 }
 
