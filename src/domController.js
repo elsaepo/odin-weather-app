@@ -14,17 +14,19 @@ function createMainWeather(weather) {
     const mainBlock = document.createElement("div");
     mainBlock.classList.add("main-block");
 
+    let current = weather.weatherData.current;
+
     // Create the weather elements from arguments and store them in an object for iterating appends    
     const mainElements = {
-        status: createWeatherElement("main", "description", `${weather.currentWeather.weather.description}.`),
+        status: createWeatherElement("main", "description", `${current.weather.description}.`),
         location: createWeatherElement("main", "location", `${weather.geoData.name}, ${weather.geoData.country}`),
         date: createWeatherElement("main", "date", new Date().toLocaleDateString("en-us", { weekday: 'long', month: 'short', day: 'numeric' })),
-        icon: createWeatherElement("main", "icon", `http://openweathermap.org/img/wn/${weather.currentWeather.weather.icon}@4x.png`),
-        temp: createWeatherElement("main", "temp", Math.round(weather.currentWeather.currentTemp)),
-        units: createWeatherElement("main", "units", `${weather.currentWeather.units === "CHANGE THIS HERE" ? "C" : "C"}`),
-        feelsLike: createWeatherElement("main", "feels-like", `FEELS LIKE: ${Math.round(weather.currentWeather.feelsLike)}${weather.currentWeather.units === "CHANGE THIS HERE" ? "C" : "C"}`),
-        humidity: createWeatherElement("main", "humidity", `HUMIDITY: ${weather.currentWeather.humidity}%`),
-        wind: createWeatherElement("main", "wind", `WIND: ${Math.round(weather.currentWeather.wind.speed)}km/h`)
+        icon: createWeatherElement("main", "icon", `http://openweathermap.org/img/wn/${current.weather.icon}@4x.png`),
+        temp: createWeatherElement("main", "temp", Math.round(current.currentTemp)),
+        units: createWeatherElement("main", "units", `${current.units === "CHANGE THIS HERE" ? "C" : "C"}`),
+        feelsLike: createWeatherElement("main", "feels-like", `FEELS LIKE: ${Math.round(current.feelsLike)}${current.units === "CHANGE THIS HERE" ? "C" : "C"}`),
+        humidity: createWeatherElement("main", "humidity", `HUMIDITY: ${current.humidity}%`),
+        wind: createWeatherElement("main", "wind", `WIND: ${Math.round(current.wind.speed)}km/h`)
         // optional: chance of rain
     }
     for (let element in mainElements) {
@@ -33,10 +35,10 @@ function createMainWeather(weather) {
     return mainBlock;
 }
 
-function createForecastWeather(weather) {
+function createForecastWeather(forecast) {
     const forecastContainer = document.createElement("div");
     forecastContainer.classList.add("forecast-container");
-    for (let day of weather.forecastWeather) {
+    for (let day of forecast) {
         const forecastBlock = document.createElement("div");
         forecastBlock.classList.add("forecast-block");
         const forecastElements = {
@@ -72,7 +74,7 @@ function createWeatherElement(use, type, content) {
 
 function createWeather(weather) {
     dayContainer.appendChild(createMainWeather(weather))
-    forecastContainer.appendChild(createForecastWeather(weather))
+    forecastContainer.appendChild(createForecastWeather(weather.weatherData.daily))
 }
 
 export default {

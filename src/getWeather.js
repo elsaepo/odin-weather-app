@@ -29,50 +29,38 @@ async function getGeocodeData(city) {
     }
 }
 
-// Fetches current weather data from geographical coordinates passed into API
-async function getcurrentWeather(location, units) {
+// Fetches the current weather and weather forecast for 7 days (daily) and 48 hours (hourly) from API
+// Current weather is a single object, forecasts are array of weather objects
+// Takes geographical object returned from getGeocodeData()
+async function getWeatherData(location, units) {
     let lon = location.lon;
     let lat = location.lat;
-    let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}`,
+    let exclude = `minutely,alerts`;
+    let response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=${units}&exclude=${exclude}&appid=${apiKey}`,
         { mode: "cors" });
     checkResponse(response);
-    // Converts to valid JSON format we can use
-    let currentWeather = await response.json();
-    return currentWeather;
-}
-
-// Fetches 5 day forecast from geographical coordinates passed into API
-// Returns an object that contains a list of 40 3hr time slots from the time the forecast was fetched
-async function getForecast(location, units) {
-    let lon = location.lon;
-    let lat = location.lat;
-    let response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}`,
-        { mode: "cors" });
-    checkResponse(response);
-    // Converts to valid JSON format we can use
-    let forecastWeather = await response.json();
-    return forecastWeather;
+    let weatherData = await response.json();
+    return weatherData;
 }
 
 // Main function we will be calling - gets geo data, then gets current weather and forecast
-// Returns an object that contains all 3 data blocks as objects
+// Returns an object that contains both data blocks as objects
 async function getWeather(location, units) {
     let geoData = getGeocodeData(location);
-    let currentWeather = geoData.then(loc => {
-        return getcurrentWeather(loc, units);
+    let weatherData = geoData.then(loc => {
+        return getWeatherData(loc, units);
+    });
+    return Promise.all([geoData, weatherData])
+    .then(([geoData, weatherData]) => {
+        return {
+            geoData,
+            weatherData
+        }
     })
-    let forecastWeather = geoData.then(loc => {
-        return getForecast(loc, units);
-    })
-    return Promise.all([geoData, currentWeather, forecastWeather])
-        .then(([geoData, currentWeather, forecastWeather]) => {
-            return { geoData, currentWeather, forecastWeather }
-        })
-        .catch(err => {
-            console.error(err);
-            throw Error(err);
-        })
+    .catch(err => {
+        console.error(err);
+        throw Error(err);
+    });
 }
 
 export default getWeather;

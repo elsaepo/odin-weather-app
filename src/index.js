@@ -9,10 +9,12 @@ let units = "metric";
 // convert the city into the correct format before passing it to getWeather:
 //
 //
-let weatherData = getWeather("Melbourne,Australia", "metric");
-weatherData
+let weather = getWeather("Melbourne,Australia", "metric");
+weather
 .then(data => {
-    return processWeather(data);
+    // console.log(data.weatherData)
+    data.weatherData = processWeather(data.weatherData);
+    return data;
 })
 .then((weather) => {
     console.log(weather)
