@@ -41,15 +41,15 @@ function createForecastScroller(){
     let scrollLeft;
     const slider = document.createElement("div");
     slider.classList.add("forecast-scroller");
-    const end = () => {
-        isDown = false;
-        slider.classList.remove("forecast-scroller-active");
-    }
     const start = (event) => {
         isDown = true;
         slider.classList.add("forecast-scroller-active");
         startX = event.pageX || event.touches[0].pageX - slider.offsetLeft;
         scrollLeft = slider.scrollLeft;
+    }
+    const end = () => {
+        isDown = false;
+        slider.classList.remove("forecast-scroller-active");
     }
     const move = (event) => {
         if(!isDown) return;

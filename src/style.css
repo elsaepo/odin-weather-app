@@ -20,7 +20,7 @@ h1, h2, h3, h4, h5, h6, p {
     width: 100vw;
     height: 100vh;
     display: grid;
-    grid-template-rows: 30% 30% 36% 4%;
+    grid-template-rows: 30% 30% 35% 5%;
 }
 
 section {
@@ -39,8 +39,8 @@ header {
 .main-block {
     width: 100%;
     display: grid;
-    grid-template-columns: 120px auto 10% 1fr;
-    grid-template-rows: 42px 20px 40px 30px 30px 30px;
+    grid-template-columns: 90px auto 6% 1fr;
+    grid-template-rows: auto 20px 40px 30px 30px 30px;
 }
 
 .main-block > * {
@@ -53,6 +53,7 @@ header {
 }
 
 .main-description {
+    line-height: 0.9;
     font-size: 2rem;
     font-weight: 500;
 }
@@ -63,10 +64,11 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-left: -6px;
 }
 
 .main-icon > img {
-    transform: scale(0.8)
+    transform: scale(0.7)
 }
 
 .main-temp {
@@ -186,7 +188,7 @@ footer {
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: baseline;
 }
 
 footer p {
