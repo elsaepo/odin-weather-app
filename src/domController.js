@@ -199,6 +199,7 @@ function changeUnits(weather, elements, units){
     currentElements.temp.textContent = updateNumber(currentWeather.currentTemp);
     currentElements.feelsLike.textContent = `FEELS LIKE: ${updateNumber(currentWeather.feelsLike)}${units === "metric" ? "C" : "F"}`;
     currentElements.wind.textContent = `WIND: ${updateNumber(currentWeather.wind.speed)}${units === "metric" ? "m/s" : "mph"}`;
+    currentElements.units.textContent = `${units === "metric" ? "C" : "F"}`;
     for (let i = 0; i < forecastElements.length; i++){
         forecastElements[i].maxTemp.textContent = `${updateNumber(forecastWeather[i].maxTemp)}°`;
         forecastElements[i].minTemp.textContent = `${updateNumber(forecastWeather[i].minTemp)}°`;
