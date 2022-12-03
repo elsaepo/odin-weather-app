@@ -157,15 +157,15 @@ header {
     color: grey;
 }
 
-.units-toggle-active {
-    color: white;
-    font-weight: 700;
-}
-
 .units-toggle span {
     font-size: 0.8rem;
     font-weight: 200;
     color: grey;
+}
+
+.units-toggle button.units-toggle-active {
+    color: white;
+    font-weight: 900;
 }
 
 #error-container {
@@ -198,7 +198,8 @@ header {
 .forecast-container {
     position: absolute;
     display: flex;
-    border: 1px solid white;
+    border-left: 2px solid white;
+    border-right: 2px solid white;
 }
 
 .forecast-block {

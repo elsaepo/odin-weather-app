@@ -27,7 +27,7 @@ function createMainWeather(weather) {
         units: createWeatherElement("main", "units", `${current.units === "CHANGE THIS HERE" ? "C" : "C"}`),
         feelsLike: createWeatherElement("main", "feels-like", `FEELS LIKE: ${Math.round(current.feelsLike)}${current.units === "CHANGE THIS HERE" ? "C" : "C"}`),
         humidity: createWeatherElement("main", "humidity", `HUMIDITY: ${current.humidity}%`),
-        wind: createWeatherElement("main", "wind", `WIND: ${Math.round(current.wind.speed)}km/h`)
+        wind: createWeatherElement("main", "wind", `WIND: ${Math.round(current.wind.speed)}m/s`)
         // optional: chance of rain
     }
     for (let element in mainElements) {
@@ -41,11 +41,11 @@ function createMainWeather(weather) {
     errorContainer.id = "error-container";
     mainBlock.appendChild(inputsBlock);
     mainBlock.appendChild(errorContainer);
-    return mainBlock;
+    return [mainBlock, mainElements];
 }
 
 // This slider code made possible thanks to KellyEx: https://codepen.io/kellyex/pen/KKwwdYg
-function createForecastScroller(){
+function createForecastScroller() {
     const slider = document.createElement("div");
     slider.classList.add("forecast-scroller");
     let isDown = false;
@@ -62,7 +62,7 @@ function createForecastScroller(){
         slider.classList.remove("forecast-scroller-active");
     }
     const move = (event) => {
-        if(!isDown) return;
+        if (!isDown) return;
         event.preventDefault();
         const x = event.pageX || event.touches[0].pageX - slider.offsetLeft;
         const dist = (x - startX);
@@ -83,7 +83,8 @@ function createForecastWeather(forecast) {
     const forecastScroller = createForecastScroller();
     const forecastContainer = document.createElement("div");
     forecastContainer.classList.add("forecast-container");
-    for (let day of forecast) {
+    let forecastArray = [];
+        for (let day of forecast) {
         const forecastBlock = document.createElement("div");
         forecastBlock.classList.add("forecast-block");
         const forecastElements = {
@@ -94,16 +95,17 @@ function createForecastWeather(forecast) {
             // units: createWeatherElement("forecast", "units", `${day.units === "CHANGE THIS HERE" ? "C" : "C"}`),
             // optional: chance of rain
         }
-        for (let element in forecastElements){
+        forecastArray.push(forecastElements);
+        for (let element in forecastElements) {
             forecastBlock.appendChild(forecastElements[element]);
         }
         forecastContainer.appendChild(forecastBlock);
     }
     forecastScroller.appendChild(forecastContainer);
-    return forecastScroller;
+    return [forecastScroller, forecastArray];
 }
 
-function createCityInput(){
+function createCityInput() {
     const form = document.createElement("form");
     form.id = "form-city";
     const cityInput = document.createElement("input");
@@ -127,20 +129,28 @@ function createCityInput(){
 }
 
 // Removes whitespace from the city input for entry into API
-function parseCityInput(city){
+function parseCityInput(city) {
     return city.replace(/\s/g, "").toLowerCase();
 }
 
-function createUnitsToggle(){
+function createUnitsToggle() {
     const units = document.createElement("div");
     units.classList.add("units-toggle");
     const metric = document.createElement("button");
+    metric.id = "toggle-metric";
     metric.textContent = "C";
     const divider = document.createElement("span");
     divider.textContent = "/";
-    const fahrenheit = document.createElement("button");
-    fahrenheit.textContent = "F";
-    units.append(metric, divider, fahrenheit);
+    const imperial = document.createElement("button");
+    imperial.id = "toggle-imperial";
+    imperial.textContent = "F";
+    metric.addEventListener("click", () => {
+        eventEmitter.emit("set-units", "metric");
+    });
+    imperial.addEventListener("click", () => {
+        eventEmitter.emit("set-units", "imperial");
+    })
+    units.append(metric, divider, imperial);
     return units;
 }
 
@@ -161,26 +171,66 @@ function createWeatherElement(use, type, content) {
     return block;
 }
 
-function removeErrors(){
+function removeErrors() {
     const errorContainer = document.querySelector("#error-container");
     errorContainer.textContent = "";
 }
 
-function cityError(){
+function cityError() {
     const errorContainer = document.querySelector("#error-container");
     errorContainer.textContent = "City could not be found.";
 }
 
-function createWeather(weather) {
-    while (dayContainer.firstChild){
+function changeUnits(weather, elements, units){
+    let currentElements = elements[0];
+    let currentWeather = weather[0];
+    let forecastElements = elements[1];
+    let forecastWeather = weather[1];
+    function updateNumber(number, wind){
+        if (units === "imperial"){
+            if (wind === true){
+                return Math.round(number);
+            } else {
+                return Math.round((number * 9 / 5) + 32);
+            }
+        }
+            else return Math.round(number);
+    }
+    currentElements.temp.textContent = updateNumber(currentWeather.currentTemp);
+    currentElements.feelsLike.textContent = `FEELS LIKE: ${updateNumber(currentWeather.feelsLike)}${units === "metric" ? "C" : "F"}`;
+    currentElements.wind.textContent = `WIND: ${updateNumber(currentWeather.wind.speed)}${units === "metric" ? "m/s" : "mph"}`;
+    for (let i = 0; i < forecastElements.length; i++){
+        forecastElements[i].maxTemp.textContent = `${updateNumber(forecastWeather[i].maxTemp)}°`;
+        forecastElements[i].minTemp.textContent = `${updateNumber(forecastWeather[i].minTemp)}°`;
+    }
+    const metricELement = document.getElementById("toggle-metric");
+    const imperialELement = document.getElementById("toggle-imperial");
+    if (units === "metric"){
+        metricELement.classList.add("units-toggle-active");
+        imperialELement.classList.remove("units-toggle-active");
+    } else {
+        metricELement.classList.remove("units-toggle-active");
+        imperialELement.classList.add("units-toggle-active");
+    }
+}
+
+function createWeather(weather, units) {
+    while (dayContainer.firstChild) {
         dayContainer.removeChild(dayContainer.firstChild)
     }
-    while (forecastContainer.firstChild){
+    while (forecastContainer.firstChild) {
         forecastContainer.removeChild(forecastContainer.firstChild)
     }
-    dayContainer.appendChild(createMainWeather(weather));
-    forecastContainer.appendChild(createForecastWeather(weather.weatherData.daily));
+    let weatherItems = createMainWeather(weather);
+    let forecastItems = createForecastWeather(weather.weatherData.daily);
+    dayContainer.appendChild(weatherItems[0]);
+    forecastContainer.appendChild(forecastItems[0]);
     removeErrors();
+    eventEmitter.on("change-units", newUnits => {
+        changeUnits([weather.weatherData.current, weather.weatherData.daily], [weatherItems[1], forecastItems[1]], newUnits)
+    })
+    changeUnits([weather.weatherData.current, weather.weatherData.daily], [weatherItems[1], forecastItems[1]], units)
+    
 }
 
 export default {

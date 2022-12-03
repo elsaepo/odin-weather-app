@@ -7,19 +7,28 @@ let units = "metric";
 let location = "Melbourne,Australia";
 
 domController.eventEmitter.on("weather-city", (city) => {
-    location = city;
-    weather();
+    weather(city);
 })
 
-function weather(){
-    let weather = getWeather(location, units);
+domController.eventEmitter.on("set-units", (u) => {
+    if (u === units){
+        return;
+    }
+    domController.eventEmitter.emit("change-units", u)
+    units = u;
+
+})
+
+function weather(city){
+    let weather = getWeather(city, "metric");
     weather
     .then(data => {
         data.weatherData = processWeather(data.weatherData);
         return data;
     })
     .then((weather) => {
-        domController.createWeather(weather)
+        location = city;
+        domController.createWeather(weather, units)
     })
     .catch(err => {
         console.error(err)
@@ -29,4 +38,4 @@ function weather(){
     })
 }
 
-weather();
+weather(location);
