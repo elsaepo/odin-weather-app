@@ -1,3 +1,5 @@
+import { EventEmitter } from "events";
+const eventEmitter = new EventEmitter();
 const app = document.querySelector("#app");
 const header = document.createElement("header");
 const dayContainer = document.createElement("section");
@@ -10,12 +12,11 @@ footerName.textContent = "Carl Madsen 2022";
 footer.appendChild(footerName);
 app.append(header, dayContainer, forecastContainer, footer)
 
+// Creates the main weather block
 function createMainWeather(weather) {
     const mainBlock = document.createElement("div");
     mainBlock.classList.add("main-block");
-
     let current = weather.weatherData.current;
-
     // Create the weather elements from arguments and store them in an object for iterating appends    
     const mainElements = {
         status: createWeatherElement("main", "description", `${current.weather.description}.`),
@@ -32,15 +33,24 @@ function createMainWeather(weather) {
     for (let element in mainElements) {
         mainBlock.appendChild(mainElements[element]);
     }
+    const inputsBlock = document.createElement("div");
+    inputsBlock.classList.add("main-inputs");
+    inputsBlock.appendChild(createCityInput());
+    inputsBlock.appendChild(createUnitsToggle());
+    const errorContainer = document.createElement("div");
+    errorContainer.id = "error-container";
+    mainBlock.appendChild(inputsBlock);
+    mainBlock.appendChild(errorContainer);
     return mainBlock;
 }
 
+// This slider code made possible thanks to KellyEx: https://codepen.io/kellyex/pen/KKwwdYg
 function createForecastScroller(){
+    const slider = document.createElement("div");
+    slider.classList.add("forecast-scroller");
     let isDown = false;
     let startX;
     let scrollLeft;
-    const slider = document.createElement("div");
-    slider.classList.add("forecast-scroller");
     const start = (event) => {
         isDown = true;
         slider.classList.add("forecast-scroller-active");
@@ -68,6 +78,7 @@ function createForecastScroller(){
     return slider;
 }
 
+// Creates the forecasted weather block (slider)
 function createForecastWeather(forecast) {
     const forecastScroller = createForecastScroller();
     const forecastContainer = document.createElement("div");
@@ -92,7 +103,48 @@ function createForecastWeather(forecast) {
     return forecastScroller;
 }
 
-// Creates a weather element based on where it is used (main or forecast), it's type and content
+function createCityInput(){
+    const form = document.createElement("form");
+    form.id = "form-city";
+    const cityInput = document.createElement("input");
+    cityInput.type = "text";
+    cityInput.placeholder = "eg. London, GB";
+    const cityButton = document.createElement("button");
+    cityButton.type = "submit";
+    const cityIcon = document.createElement("i");
+    cityIcon.classList.add("fa-solid", "fa-magnifying-glass");
+    cityButton.appendChild(cityIcon);
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        let city = parseCityInput(cityInput.value);
+        eventEmitter.emit("weather-city", city);
+        return false;
+    });
+    form.appendChild(cityInput);
+    form.appendChild(cityButton);
+    return form;
+}
+
+// Removes whitespace from the city input for entry into API
+function parseCityInput(city){
+    return city.replace(/\s/g, "").toLowerCase();
+}
+
+function createUnitsToggle(){
+    const units = document.createElement("div");
+    units.classList.add("units-toggle");
+    const metric = document.createElement("button");
+    metric.textContent = "C";
+    const divider = document.createElement("span");
+    divider.textContent = "/";
+    const fahrenheit = document.createElement("button");
+    fahrenheit.textContent = "F";
+    units.append(metric, divider, fahrenheit);
+    return units;
+}
+
+// Creates a weather element based on where it is used (main or forecast), its type and content
 // Sets class to be a standadised format for easier CSSing of the grid
 function createWeatherElement(use, type, content) {
     if (type === "icon") {
@@ -103,18 +155,36 @@ function createWeatherElement(use, type, content) {
         block.appendChild(image);
         return block;
     }
-    const block = document.createElement("p")
+    const block = document.createElement("p");
     block.classList.add(`${use}-${type}`);
     block.textContent = content;
     return block;
 }
 
+function removeErrors(){
+    const errorContainer = document.querySelector("#error-container");
+    errorContainer.textContent = "";
+}
+
+function cityError(){
+    const errorContainer = document.querySelector("#error-container");
+    errorContainer.textContent = "City could not be found.";
+}
+
 function createWeather(weather) {
-    dayContainer.appendChild(createMainWeather(weather))
-    console.log(weather.weatherData.daily)
-    forecastContainer.appendChild(createForecastWeather(weather.weatherData.daily))
+    while (dayContainer.firstChild){
+        dayContainer.removeChild(dayContainer.firstChild)
+    }
+    while (forecastContainer.firstChild){
+        forecastContainer.removeChild(forecastContainer.firstChild)
+    }
+    dayContainer.appendChild(createMainWeather(weather));
+    forecastContainer.appendChild(createForecastWeather(weather.weatherData.daily));
+    removeErrors();
 }
 
 export default {
-    createWeather
+    createWeather,
+    eventEmitter,
+    cityError
 }

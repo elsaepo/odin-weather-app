@@ -57,10 +57,9 @@ async function getWeather(location, units) {
             weatherData
         }
     })
-    .catch(err => {
-        console.error(err);
-        throw Error(err);
-    });
+    // .catch(err => {
+    //     throw Error(err);
+    // });
 }
 
 export default getWeather;
