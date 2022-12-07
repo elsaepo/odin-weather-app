@@ -260,7 +260,12 @@ footer {
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: baseline;
+    align-items: center;
+    gap: 12px;
+}
+
+footer a:visited {
+    color: white;
 }
 
 footer p {
