@@ -1,5 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Carter+One&family=Poppins:wght@200;300;400;500;600&family=Roboto+Mono:wght@200;400;700&display=swap");
 
+:root {
+    --background-color: rgb(50, 50, 50);
+    --text-color: white;
+}
+
+:root.dark {
+    --background-color: rgb(210, 210, 210);
+    --text-color: rgb(20, 20, 20);
+}
+
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -7,9 +17,9 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: rgb(50, 50, 50);
+    background-color: var(--background-color);
     font-family: Poppins;
-    color: white;
+    color: var(--text-color);
 }
 
 h1, h2, h3, h4, h5, h6, p {
@@ -128,7 +138,7 @@ header {
     background-color: transparent;
     border: none;
     font-size: 1rem;
-    color: white;
+    color: var(--text-color);
     text-align: right;
 }
 
@@ -164,7 +174,7 @@ header {
 }
 
 .units-toggle button.units-toggle-active {
-    color: white;
+    color: var(--text-color);
     font-weight: 900;
 }
 
@@ -197,8 +207,8 @@ header {
 .forecast-container {
     position: absolute;
     display: flex;
-    border-left: 2px solid white;
-    border-right: 2px solid white;
+    border-left: 2px solid grey;
+    border-right: 2px solid grey;
 }
 
 .forecast-block {
@@ -260,7 +270,7 @@ footer {
 }
 
 footer a:visited {
-    color: white;
+    color: var(--text-color);
 }
 
 footer p {
