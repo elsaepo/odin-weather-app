@@ -21,40 +21,40 @@ gitHubLogo.classList.add("fa-brands", "fa-github", "fa-xl", "footer-logo");
 footerLink.appendChild(gitHubLogo);
 
 function getTheme() {
-  return localStorage.getItem("theme");
+    return localStorage.getItem("theme");
 }
 
 function toggleDarkMode() {
-  document.querySelector(":root").classList.toggle("dark");
-  darkModeButton.classList.toggle("fa-moon");
-  darkModeButton.classList.toggle("fa-sun");
+    document.querySelector(":root").classList.toggle("dark");
+    darkModeButton.classList.toggle("fa-moon");
+    darkModeButton.classList.toggle("fa-sun");
 }
 
 function toggleDarkStorage() {
-  if (getTheme() === "dark") {
-    localStorage.setItem("theme", "light");
-  } else {
-    localStorage.setItem("theme", "dark");
-  }
+    if (getTheme() === "dark") {
+        localStorage.setItem("theme", "light");
+    } else {
+        localStorage.setItem("theme", "dark");
+    }
 }
 
 function isBrowserDarkMode() {
-  return (
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
+    return (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
 }
 
 const darkModeButton = document.createElement("i");
 darkModeButton.id = "footer-dark-mode";
 darkModeButton.classList.add("fa-solid", "fa-moon", "fa-xl");
 darkModeButton.addEventListener("mousedown", function () {
-  toggleDarkMode();
-  toggleDarkStorage();
+    toggleDarkMode();
+    toggleDarkStorage();
 });
 
 if (getTheme() === "dark" || (!getTheme() && isBrowserDarkMode())) {
-  toggleDarkMode();
+    toggleDarkMode();
 }
 
 footer.appendChild(authorName);
@@ -135,7 +135,7 @@ function createForecastWeather(forecast) {
     const forecastContainer = document.createElement("div");
     forecastContainer.classList.add("forecast-container");
     let forecastArray = [];
-        for (let day of forecast) {
+    for (let day of forecast) {
         const forecastBlock = document.createElement("div");
         forecastBlock.classList.add("forecast-block");
         const forecastElements = {
@@ -232,32 +232,32 @@ function cityError() {
     errorContainer.textContent = "City could not be found.";
 }
 
-function changeUnits(weather, elements, units){
+function changeUnits(weather, elements, units) {
     let currentElements = elements[0];
     let currentWeather = weather[0];
     let forecastElements = elements[1];
     let forecastWeather = weather[1];
-    function updateNumber(number, wind){
-        if (units === "imperial"){
-            if (wind === true){
+    function updateNumber(number, wind) {
+        if (units === "imperial") {
+            if (wind === true) {
                 return Math.round(number);
             } else {
                 return Math.round((number * 9 / 5) + 32);
             }
         }
-            else return Math.round(number);
+        else return Math.round(number);
     }
     currentElements.temp.textContent = updateNumber(currentWeather.currentTemp);
     currentElements.feelsLike.textContent = `FEELS LIKE: ${updateNumber(currentWeather.feelsLike)}${units === "metric" ? "C" : "F"}`;
     currentElements.wind.textContent = `WIND: ${updateNumber(currentWeather.wind.speed)}${units === "metric" ? "m/s" : "mph"}`;
     currentElements.units.textContent = `${units === "metric" ? "C" : "F"}`;
-    for (let i = 0; i < forecastElements.length; i++){
+    for (let i = 0; i < forecastElements.length; i++) {
         forecastElements[i].maxTemp.textContent = `${updateNumber(forecastWeather[i].maxTemp)}°`;
         forecastElements[i].minTemp.textContent = `${updateNumber(forecastWeather[i].minTemp)}°`;
     }
     const metricELement = document.getElementById("toggle-metric");
     const imperialELement = document.getElementById("toggle-imperial");
-    if (units === "metric"){
+    if (units === "metric") {
         metricELement.classList.add("units-toggle-active");
         imperialELement.classList.remove("units-toggle-active");
     } else {
@@ -277,16 +277,40 @@ function createWeather(weather, units) {
     let forecastItems = createForecastWeather(weather.weatherData.daily);
     dayContainer.appendChild(weatherItems[0]);
     forecastContainer.appendChild(forecastItems[0]);
+    displayLoader(false);
     removeErrors();
     eventEmitter.on("change-units", newUnits => {
         changeUnits([weather.weatherData.current, weather.weatherData.daily], [weatherItems[1], forecastItems[1]], newUnits)
     })
     changeUnits([weather.weatherData.current, weather.weatherData.daily], [weatherItems[1], forecastItems[1]], units)
-    
+}
+
+function displayLoader(bool){
+    if (bool === true){
+        const loadScreen = document.createElement("div");
+        loadScreen.classList.add("load-screen");
+        const loader = document.createElement("div");
+        loader.classList.add("loader");
+        for (let i = 0; i < 8; i++){
+            const loadCircleBox = document.createElement("div");
+            loadCircleBox.classList.add("load-circle-box");
+            const loadCircle = document.createElement("div");
+            loadCircle.classList.add("load-circle");
+            loadCircleBox.style.transform = `rotate(${i*45}deg)`
+            loadCircleBox.appendChild(loadCircle);
+            loader.appendChild(loadCircleBox);
+        }
+        loadScreen.appendChild(loader);
+        app.appendChild(loadScreen)
+    } else if (bool === false){
+        const loadScreens = document.querySelectorAll(".load-screen");
+        loadScreens.forEach(screen => screen.remove())
+    }
 }
 
 export default {
     createWeather,
     eventEmitter,
-    cityError
+    cityError,
+    displayLoader
 }

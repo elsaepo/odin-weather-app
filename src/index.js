@@ -20,6 +20,7 @@ domController.eventEmitter.on("set-units", (u) => {
 })
 
 function weather(city){
+    domController.displayLoader(true);
     let weather = getWeather(city, "metric");
     weather
     .then(data => {
@@ -31,6 +32,7 @@ function weather(city){
         domController.createWeather(weather, units)
     })
     .catch(err => {
+        domController.displayLoader(false);
         console.error(err)
         if (err.message === "NO_CITY"){
             domController.cityError();
